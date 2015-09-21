@@ -1,6 +1,7 @@
 package com.example.epomeroy.mycontacts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,6 +17,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
+    public static final String EXTRA = "CVA_Contact";
+
+    private ArrayList<Contact> contacts;
 
     private class ContactAdapter extends ArrayAdapter<Contact> {
         public ContactAdapter(ArrayList<Contact> contacts) {
@@ -39,7 +44,7 @@ public class ContactListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
 
-        ArrayList<Contact> contacts = new ArrayList<>();
+        contacts = new ArrayList<>();
 
         for (int i = 0; i < 30; i++) {
             Contact c = new Contact();
@@ -61,12 +66,21 @@ public class ContactListActivity extends AppCompatActivity {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (firstVisibleItem > previousFirstItem) {
                     getSupportActionBar().hide();
-                }
-                else if (firstVisibleItem < previousFirstItem) {
+                } else if (firstVisibleItem < previousFirstItem) {
                     getSupportActionBar().show();
                 }
 
                 previousFirstItem = firstVisibleItem;
+            }
+        });
+
+        contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Contact contact = ContactListActivity.this.contacts.get(position);
+                Intent intent = new Intent(ContactListActivity.this, ContactViewActivity.class);
+                intent.putExtra(ContactListActivity.EXTRA, contact);
+                startActivity(intent);
             }
         });
     }
