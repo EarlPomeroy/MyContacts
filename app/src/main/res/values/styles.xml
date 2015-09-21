@@ -5,5 +5,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
     </style>
+    <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
 
 </resources>
