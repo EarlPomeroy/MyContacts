@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,38 +19,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ContactViewActivity extends AppCompatActivity {
-    private static final String TAG = "ContactViewActivity";
     public static final String EXTRA = "CVA_Contact";
-
-    private class FieldsAdapter extends BaseAdapter {
-        private ArrayList<String> emails;
-        private ArrayList<String> phoneNumbers;
-
-        public FieldsAdapter(ArrayList<String> emails, ArrayList<String> phoneNumbers) {
-            emails = emails;
-            phoneNumbers = phoneNumbers;
-        }
-
-        @Override
-        public int getCount() {
-            return 0;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
-        }
-    }
+    private static final String TAG = "ContactViewActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +36,7 @@ public class ContactViewActivity extends AppCompatActivity {
         int height = point.y;
 
         RelativeLayout headerSection = (RelativeLayout) findViewById(R.id.contact_view_header);
-        headerSection.setLayoutParams(new RelativeLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
+        headerSection.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
         Contact contact = (Contact) getIntent().getSerializableExtra(EXTRA);
         TextView contactName = (TextView) findViewById(R.id.contact_view_name);
@@ -87,6 +58,7 @@ public class ContactViewActivity extends AppCompatActivity {
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
         ListView listView = (ListView) findViewById(R.id.contact_view_fields);
+        listView.setAdapter(new FieldsAdapter(contact.getPhoneNumbers(), contact.getEmails()));
     }
 
     @Override
@@ -109,5 +81,55 @@ public class ContactViewActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class FieldsAdapter extends BaseAdapter {
+               private ArrayList<String> phoneNumbers;
+        private ArrayList<String> emails;
+
+        public FieldsAdapter(ArrayList<String> phoneNumbers, ArrayList<String> emails ) {
+            this.phoneNumbers = phoneNumbers;
+            this.emails = emails;
+        }
+
+        @Override
+        public int getCount() {
+            return emails.size() + phoneNumbers.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            if (isEmail(position)) {
+                return emails.get(position - phoneNumbers.size());
+            }
+
+            return phoneNumbers.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = ContactViewActivity.this.getLayoutInflater().inflate(R.layout.contact_view_field_row, parent, false);
+            }
+
+            String value = (String) getItem(position);
+            TextView contactValue = (TextView) convertView.findViewById(R.id.contact_view_row_value);
+            contactValue.setText(value);
+
+            return convertView;
+        }
+
+        private boolean isEmail(int position) {
+            if (position > phoneNumbers.size() - 1) {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

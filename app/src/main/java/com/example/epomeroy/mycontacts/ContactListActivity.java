@@ -48,7 +48,9 @@ public class ContactListActivity extends AppCompatActivity {
 
         for (int i = 0; i < 30; i++) {
             Contact c = new Contact();
-            c.setName("Fuck U. Bob");
+            c.setName("No One");
+            c.addEmail("no@one.com");
+            c.addPhoneNumber("1-800-000-0000");
             contacts.add(c);
         }
 
