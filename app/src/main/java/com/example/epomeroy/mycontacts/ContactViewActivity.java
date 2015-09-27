@@ -1,5 +1,6 @@
 package com.example.epomeroy.mycontacts;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -26,6 +27,7 @@ public class ContactViewActivity extends AppCompatActivity {
     public static final String EXTRA = "CVA_Contact";
     private static final String TAG = "ContactViewActivity";
     private int iconColor;
+    private Contact currentContact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,18 +45,20 @@ public class ContactViewActivity extends AppCompatActivity {
         RelativeLayout headerSection = (RelativeLayout) findViewById(R.id.contact_view_header);
         headerSection.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
-        Contact contact = (Contact) getIntent().getSerializableExtra(EXTRA);
+        currentContact = (Contact) getIntent().getSerializableExtra(EXTRA);
         TextView contactName = (TextView) findViewById(R.id.contact_view_name);
-        contactName.setText(contact.getName());
+        contactName.setText(currentContact.getName());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.contact_view_toolbar);
         this.setSupportActionBar(toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                int id = menuItem.getGroupId();
+                int id = menuItem.getItemId();
                 if (id == R.id.contact_view_edit) {
-                    Log.d(TAG, "Clicked edit icon");
+                    Intent intent = new Intent(ContactViewActivity.this, ContactEditActivity.class);
+                    intent.putExtra(ContactEditActivity.EXTRA, currentContact);
+                    startActivity(intent);
                     return true;
                 }
                 return false;
@@ -63,7 +67,7 @@ public class ContactViewActivity extends AppCompatActivity {
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
         ListView listView = (ListView) findViewById(R.id.contact_view_fields);
-        listView.setAdapter(new FieldsAdapter(contact.getPhoneNumbers(), contact.getEmails()));
+        listView.setAdapter(new FieldsAdapter(currentContact.getPhoneNumbers(), currentContact.getEmails()));
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.seattle);
         Palette palette = Palette.generate(bitmap);

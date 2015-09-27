@@ -17,9 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
-    public static final String EXTRA = "CVA_Contact";
-
-    private ArrayList<Contact> contacts;
+    private ContactList contacts;
 
     private class ContactAdapter extends ArrayAdapter<Contact> {
         public ContactAdapter(ArrayList<Contact> contacts) {
@@ -44,7 +42,7 @@ public class ContactListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
 
-        contacts = new ArrayList<>();
+        contacts = ContactList.getInstance();
 
         for (int i = 0; i < 30; i++) {
             Contact c = new Contact();
@@ -83,7 +81,7 @@ public class ContactListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Contact contact = ContactListActivity.this.contacts.get(position);
                 Intent intent = new Intent(ContactListActivity.this, ContactViewActivity.class);
-                intent.putExtra(ContactListActivity.EXTRA, contact);
+                intent.putExtra(ContactViewActivity.EXTRA, contact);
                 startActivity(intent);
             }
         });

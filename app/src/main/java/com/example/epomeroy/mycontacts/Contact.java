@@ -15,8 +15,16 @@ public class Contact implements Serializable {
         return phoneNumbers;
     }
 
+    public void setPhoneNumbers(ArrayList<String> phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
+    }
+
     public ArrayList<String> getEmails() {
         return emails;
+    }
+
+    public void setEmails(ArrayList<String> emails) {
+        this.emails = emails;
     }
 
     public void addEmail(String email) {
