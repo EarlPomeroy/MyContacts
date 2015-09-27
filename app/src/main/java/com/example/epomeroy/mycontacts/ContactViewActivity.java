@@ -1,8 +1,11 @@
 package com.example.epomeroy.mycontacts;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -11,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 public class ContactViewActivity extends AppCompatActivity {
     public static final String EXTRA = "CVA_Contact";
     private static final String TAG = "ContactViewActivity";
+    private int iconColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,10 @@ public class ContactViewActivity extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.contact_view_fields);
         listView.setAdapter(new FieldsAdapter(contact.getPhoneNumbers(), contact.getEmails()));
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.seattle);
+        Palette palette = Palette.generate(bitmap);
+        iconColor = palette.getDarkVibrantSwatch().getRgb();
     }
 
     @Override
@@ -118,14 +127,34 @@ public class ContactViewActivity extends AppCompatActivity {
             }
 
             String value = (String) getItem(position);
+
             TextView contactValue = (TextView) convertView.findViewById(R.id.contact_view_row_value);
             contactValue.setText(value);
+
+            ImageView iv = (ImageView) convertView.findViewById(R.id.contact_view_row_icon);
+            iv.setColorFilter(iconColor);
+
+            if (isFirst(position)) {
+                if (isEmail(position)) {
+                    iv.setImageResource(R.drawable.ic_email);
+                } else {
+                    iv.setImageResource(R.drawable.ic_call);
+                }
+            }
 
             return convertView;
         }
 
         private boolean isEmail(int position) {
             if (position > phoneNumbers.size() - 1) {
+                return true;
+            }
+
+            return false;
+        }
+
+        private boolean isFirst(int position) {
+            if (position == 0 || position == phoneNumbers.size()) {
                 return true;
             }
 

@@ -50,7 +50,9 @@ public class ContactListActivity extends AppCompatActivity {
             Contact c = new Contact();
             c.setName("No One");
             c.addEmail("no@one.com");
+            c.addEmail("no@1.com");
             c.addPhoneNumber("1-800-000-0000");
+            c.addPhoneNumber("1-800-000-0001");
             contacts.add(c);
         }
 
