@@ -21,13 +21,15 @@ public class ContactEditActivity extends AppCompatActivity {
     private static final String TAG = "ContactEditActivity";
 
     private Contact contact;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_edit);
 
-        contact = (Contact) getIntent().getSerializableExtra(EXTRA);
+        position = getIntent().getIntExtra(EXTRA, 0);
+        contact = ContactList.getInstance().get(position);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.contact_edit_toolbar);
         toolbar.setTitle(getResources().getString(R.string.edit_contact));
@@ -40,6 +42,8 @@ public class ContactEditActivity extends AppCompatActivity {
 
                 contact.setPhoneNumbers(getSectionValues(R.id.phonenumber_section));
                 contact.setEmails(getSectionValues(R.id.email_section));
+
+                ContactList.getInstance().set(position, contact);
 
                 Toast.makeText(ContactEditActivity.this, "Saved Contact", Toast.LENGTH_LONG).show();
 

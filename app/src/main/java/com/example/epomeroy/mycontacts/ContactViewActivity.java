@@ -28,6 +28,9 @@ public class ContactViewActivity extends AppCompatActivity {
     private static final String TAG = "ContactViewActivity";
     private int iconColor;
     private Contact currentContact;
+    private int position;
+    private TextView contactName;
+    private FieldsAdapter fieldAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,7 @@ public class ContactViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contact_view);
 
         Display display = getWindowManager().getDefaultDisplay();
-        Point point = new Point();
+        final Point point = new Point();
 
         display.getSize(point);
 
@@ -45,9 +48,9 @@ public class ContactViewActivity extends AppCompatActivity {
         RelativeLayout headerSection = (RelativeLayout) findViewById(R.id.contact_view_header);
         headerSection.setLayoutParams(new LinearLayout.LayoutParams(width, (int) (width * (9.0 / 16.0))));
 
-        currentContact = (Contact) getIntent().getSerializableExtra(EXTRA);
-        TextView contactName = (TextView) findViewById(R.id.contact_view_name);
-        contactName.setText(currentContact.getName());
+        this.position = getIntent().getIntExtra(EXTRA, 0);
+        currentContact = ContactList.getInstance().get(position);
+        contactName = (TextView) findViewById(R.id.contact_view_name);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.contact_view_toolbar);
         this.setSupportActionBar(toolbar);
@@ -57,7 +60,7 @@ public class ContactViewActivity extends AppCompatActivity {
                 int id = menuItem.getItemId();
                 if (id == R.id.contact_view_edit) {
                     Intent intent = new Intent(ContactViewActivity.this, ContactEditActivity.class);
-                    intent.putExtra(ContactEditActivity.EXTRA, currentContact);
+                    intent.putExtra(ContactEditActivity.EXTRA, position);
                     startActivity(intent);
                     return true;
                 }
@@ -67,11 +70,14 @@ public class ContactViewActivity extends AppCompatActivity {
         toolbar.inflateMenu(R.menu.menu_contact_view);
 
         ListView listView = (ListView) findViewById(R.id.contact_view_fields);
-        listView.setAdapter(new FieldsAdapter(currentContact.getPhoneNumbers(), currentContact.getEmails()));
+        fieldAdapter = new FieldsAdapter(currentContact.getPhoneNumbers(), currentContact.getEmails());
+        listView.setAdapter(fieldAdapter);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.seattle);
         Palette palette = Palette.generate(bitmap);
         iconColor = palette.getDarkVibrantSwatch().getRgb();
+
+        updateUI();
     }
 
     @Override
@@ -79,6 +85,12 @@ public class ContactViewActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_contact_view, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUI();
     }
 
     @Override
@@ -96,11 +108,16 @@ public class ContactViewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateUI() {
+        contactName.setText(currentContact.getName());
+        fieldAdapter.notifyDataSetChanged();
+    }
+
     private class FieldsAdapter extends BaseAdapter {
-               private ArrayList<String> phoneNumbers;
+        private ArrayList<String> phoneNumbers;
         private ArrayList<String> emails;
 
-        public FieldsAdapter(ArrayList<String> phoneNumbers, ArrayList<String> emails ) {
+        public FieldsAdapter(ArrayList<String> phoneNumbers, ArrayList<String> emails) {
             this.phoneNumbers = phoneNumbers;
             this.emails = emails;
         }

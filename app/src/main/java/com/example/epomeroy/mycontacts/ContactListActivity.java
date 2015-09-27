@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
     private ContactList contacts;
+    private ContactAdapter contactAdapter;
 
     private class ContactAdapter extends ArrayAdapter<Contact> {
         public ContactAdapter(ArrayList<Contact> contacts) {
@@ -55,7 +56,8 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
         ListView contactListView = (ListView) findViewById(R.id.contact_list_view);
-        contactListView.setAdapter(new ContactAdapter(contacts));
+        contactAdapter = new ContactAdapter(contacts);
+        contactListView.setAdapter(contactAdapter);
         contactListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int previousFirstItem = 0;
 
@@ -79,9 +81,8 @@ public class ContactListActivity extends AppCompatActivity {
         contactListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Contact contact = ContactListActivity.this.contacts.get(position);
                 Intent intent = new Intent(ContactListActivity.this, ContactViewActivity.class);
-                intent.putExtra(ContactViewActivity.EXTRA, contact);
+                intent.putExtra(ContactViewActivity.EXTRA, position);
                 startActivity(intent);
             }
         });
@@ -107,5 +108,11 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.contactAdapter.notifyDataSetChanged();
     }
 }
